@@ -78,6 +78,7 @@ namespace WebApplication2.Models
                                 newBoard.Cells[destination].Count = 1;
                                 newBoard.BlackPlayerPrison.Count--;
                                 newBoard.WhitePlayerPrison.Count++;
+                                newBoard.UserDestination += newBoard.Cells[destination].Position + 1;
                                 newBoard.Cells[destination].Color = 'B';
                                 makedBoards.Add(newBoard);
                             }
@@ -125,6 +126,7 @@ namespace WebApplication2.Models
                                             homeBoard.Cells[k].Count--;
                                             homeBoard.Cells[destination].Count = 1;
                                             homeBoard.WhitePlayerPrison.Count++;
+                                            homeBoard.UserDestination += homeBoard.Cells[destination].Position + 1;
                                             if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                             makedBoards.Add(homeBoard);
                                         }
@@ -157,6 +159,7 @@ namespace WebApplication2.Models
                                         newBoard.Cells[destination].Count = 1;
                                         newBoard.Cells[destination].Color = 'B';
                                         newBoard.WhitePlayerPrison.Count++;
+                                        newBoard.UserDestination += newBoard.Cells[destination].Position + 1;
                                         newBoard.Cells[cell.Position].Count--;
                                         if (newBoard.Cells[cell.Position].Count == 0) newBoard.Cells[cell.Position].Color = '0';
                                         makedBoards.Add(newBoard);
@@ -197,6 +200,7 @@ namespace WebApplication2.Models
                         newBoard.Cells[destination].Count = 1;
                         newBoard.BlackPlayerPrison.Count--;
                         newBoard.WhitePlayerPrison.Count++;
+                        newBoard.UserDestination += newBoard.Cells[destination].Position + 1;
                         SmallerDiceFirst.Add(newBoard);
                         return;
                     }
@@ -247,6 +251,7 @@ namespace WebApplication2.Models
                                     homeBoard.Cells[destination].Count = 1;
                                     homeBoard.Cells[destination].Color = 'B';
                                     homeBoard.WhitePlayerPrison.Count++;
+                                    homeBoard.UserDestination += homeBoard.Cells[destination].Position + 1;
                                     if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                     SmallerDiceFirst.Add(homeBoard);
                                 }
@@ -277,6 +282,7 @@ namespace WebApplication2.Models
                             {
                                 newBoard2.Cells[destination].Count = 1;
                                 newBoard2.WhitePlayerPrison.Count++;
+                                newBoard2.UserDestination += newBoard2.Cells[destination].Position + 1;
                                 newBoard2.Cells[destination].Color = 'B';
                                 newBoard2.Cells[cell.Position].Count--;
                                 if (newBoard2.Cells[cell.Position].Count == 0) newBoard2.Cells[cell.Position].Color = '0';
@@ -311,6 +317,7 @@ namespace WebApplication2.Models
                         newBoard.Cells[destination].Count = 1;
                         newBoard.BlackPlayerPrison.Count--;
                         newBoard.WhitePlayerPrison.Count++;
+                        newBoard.UserDestination += newBoard.Cells[destination].Position + 1;
                         BiggerDiceFirst.Add(newBoard);
                         return;
                     }
@@ -361,6 +368,7 @@ namespace WebApplication2.Models
                                     homeBoard.Cells[destination].Count = 1;
                                     homeBoard.Cells[destination].Color = 'B';
                                     homeBoard.WhitePlayerPrison.Count++;
+                                    homeBoard.UserDestination += homeBoard.Cells[destination].Position + 1;
                                     if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                     BiggerDiceFirst.Add(homeBoard);
                                 }
@@ -391,6 +399,7 @@ namespace WebApplication2.Models
                             {
                                 newBoard2.Cells[destination].Count = 1;
                                 newBoard2.WhitePlayerPrison.Count++;
+                                newBoard2.UserDestination += newBoard2.Cells[destination].Position + 1;
                                 newBoard2.Cells[destination].Color = 'B';
                                 newBoard2.Cells[cell.Position].Count--;
                                 if (newBoard2.Cells[cell.Position].Count == 0) newBoard2.Cells[cell.Position].Color = '0';
@@ -425,6 +434,7 @@ namespace WebApplication2.Models
                         newBoard.Cells[destination].Count = 1;
                         newBoard.BlackPlayerPrison.Count--;
                         newBoard.WhitePlayerPrison.Count++;
+                        newBoard.UserDestination +=  newBoard.Cells[destination].Position +1;
                         PossibleBoards.Add(newBoard);
                         return;
                     }
@@ -475,6 +485,7 @@ namespace WebApplication2.Models
                                     homeBoard.Cells[destination].Count = 1;
                                     homeBoard.Cells[destination].Color = 'B';
                                     homeBoard.WhitePlayerPrison.Count++;
+                                    homeBoard.UserDestination += homeBoard.Cells[destination].Position + 1;
                                     if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                     PossibleBoards.Add(homeBoard);
                                 }
@@ -505,6 +516,7 @@ namespace WebApplication2.Models
                             {
                                 newBoard2.Cells[destination].Count = 1;
                                 newBoard2.WhitePlayerPrison.Count++;
+                                newBoard2.UserDestination += newBoard2.Cells[destination].Position +1;
                                 newBoard2.Cells[destination].Color = 'B';
                                 newBoard2.Cells[cell.Position].Count--;
                                 if (newBoard2.Cells[cell.Position].Count == 0) newBoard2.Cells[cell.Position].Color = '0';

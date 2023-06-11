@@ -34,8 +34,14 @@ namespace WebApplication2.Controllers
             GameHandler gameHandler = new GameHandler();
             List<Board> possible = gameHandler.getPossibleBoards(board, dice);
             if (possible.Count == 0) return null;
-            Random rnd = new Random();
-            return possible[rnd.Next(0, possible.Count)];
+            Board toReturn = possible[0];
+            foreach(Board boardToGetHeuristic in possible)
+            {
+                boardToGetHeuristic.heuristic();
+                if (toReturn.HeuristicScore < boardToGetHeuristic.HeuristicScore) toReturn = boardToGetHeuristic;
+            }
+            //Random rnd = new Random();
+             return toReturn;
             //return null;
         }   
 

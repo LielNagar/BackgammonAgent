@@ -9,11 +9,15 @@ namespace WebApplication2.Models
 {
     public class Board
     {
-        List<Cell> cells = new List<Cell>(); // Represents 24 cells that cells[0] belongs to agent's home where there is 2 black players that belong to player
-        Cell whitePlayerPrison = new Cell();
-        Cell blackPlayerPrison = new Cell();
-        Cell whitePlayerBank = new Cell();
-        Cell blackPlayerBank = new Cell();
+        private List<Cell> cells = new List<Cell>(); // Represents 24 cells that cells[0] belongs to agent's home where there is 2 black players that belong to player
+        private Cell whitePlayerPrison = new Cell();
+        private Cell blackPlayerPrison = new Cell();
+        private Cell whitePlayerBank = new Cell();
+        private Cell blackPlayerBank = new Cell();
+        private int heuristicScore;
+        private int numOfHomeHouses;
+        private int userDestination;
+        private int agentDestination;
 
         public Board() { }
         public Board(List<Cell> cells)
@@ -48,7 +52,40 @@ namespace WebApplication2.Models
         public Cell BlackPlayerPrison { get => blackPlayerPrison; set => blackPlayerPrison = value; }
         public Cell WhitePlayerBank { get => whitePlayerBank; set => whitePlayerBank = value; }
         public Cell BlackPlayerBank { get => blackPlayerBank; set => blackPlayerBank = value; }
+        public int HeuristicScore { get => heuristicScore; set => heuristicScore = value; }
+        public int NumOfHomeHouses { get => numOfHomeHouses; set => numOfHomeHouses = value; }
+        public int UserDestination { get => userDestination; set => userDestination = value; }
+        public int AgentDestination { get => agentDestination; set => agentDestination = value; }
 
+        public int getEatenPlayers()
+        {
+            return this.WhitePlayerPrison.Count;
+        }
+
+        public int getHomeHouses()
+        {
+            int count = 0;
+            for(int i=0; i<=5; i++)
+            {
+                if (this.Cells[i].Count > 1 && this.Cells[i].Color == 'B') count++;
+            }
+            return count;
+        }
+
+        public int getOpenPlayers()
+        {
+            int count = 0;
+            foreach(Cell cell in this.Cells)
+            {
+                if (cell.Count == 1 && cell.Color == 'B') count++;
+            }
+            return count;
+        }
+
+        public void heuristic()
+        {
+            this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers();
+        }
         public bool checkWinner(char color)
         {
             if (color == 'W')
@@ -66,7 +103,7 @@ namespace WebApplication2.Models
         public bool isAllPlayersInHome()
         {
             if (this.BlackPlayerPrison.Count > 0) return false;
-            else for (int i = 5; i <= 0; i--)
+            else for (int i = 23; i >= 6; i--)
             {
                 if (this.Cells[i].Color == 'B' && this.Cells[i].Count > 0) return false;
             }
