@@ -27,7 +27,7 @@ namespace WebApplication2.Controllers
         [HttpPost]
         //[Route("/api/Boards/{dice}")]
         public Board Post([FromBody] RequestModel requestModel)
-            {
+        {
             Board board = requestModel.Board;
             Array.Sort(requestModel.Dice);
             int[] dice = requestModel.Dice;
@@ -40,9 +40,7 @@ namespace WebApplication2.Controllers
                 boardToGetHeuristic.heuristic();
                 if (toReturn.HeuristicScore < boardToGetHeuristic.HeuristicScore) toReturn = boardToGetHeuristic;
             }
-            //Random rnd = new Random();
              return toReturn;
-            //return null;
         }   
 
         // PUT api/<BoardsController>/5
