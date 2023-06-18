@@ -19,15 +19,10 @@ namespace WebApplication2.Models
         {
             Board newBoard = new Board();
             newBoard.Cells = new List<Cell>();
-            newBoard.AgentCells = new List<Cell>();
 
             foreach (Cell newCell in board.Cells) // Create board to work on
             {
                 newBoard.Cells.Add(new Cell { Count = newCell.Count, Color = newCell.Color, Position = newCell.Position });
-            }
-            foreach(Cell agentCell in board.AgentCells)
-            {
-                newBoard.AgentCells.Add(new Cell { Count = agentCell.Count, Color = agentCell.Color, Position = agentCell.Position });
             }
             newBoard.BlackPlayerPrison = new Cell(board.BlackPlayerPrison.Color, board.BlackPlayerPrison.Count, board.BlackPlayerPrison.Position);
             newBoard.WhitePlayerPrison = new Cell(board.WhitePlayerPrison.Color, board.WhitePlayerPrison.Count, board.WhitePlayerPrison.Position);
