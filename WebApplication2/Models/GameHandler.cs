@@ -8,7 +8,7 @@ namespace WebApplication2.Models
         private List<Board> possibleBoards = new List<Board>();
         private List<Board> biggerDiceFirst = new List<Board>();
         private List<Board> smallerDiceFirst = new List<Board>();
-
+        
         public GameHandler() { }
 
         public List<Board> PossibleBoards { get => possibleBoards; set => possibleBoards = value; }
@@ -19,10 +19,15 @@ namespace WebApplication2.Models
         {
             Board newBoard = new Board();
             newBoard.Cells = new List<Cell>();
+            newBoard.AgentCells = new List<Cell>();
 
             foreach (Cell newCell in board.Cells) // Create board to work on
             {
                 newBoard.Cells.Add(new Cell { Count = newCell.Count, Color = newCell.Color, Position = newCell.Position });
+            }
+            foreach(Cell agentCell in board.AgentCells)
+            {
+                newBoard.AgentCells.Add(new Cell { Count = agentCell.Count, Color = agentCell.Color, Position = agentCell.Position });
             }
             newBoard.BlackPlayerPrison = new Cell(board.BlackPlayerPrison.Color, board.BlackPlayerPrison.Count, board.BlackPlayerPrison.Position);
             newBoard.WhitePlayerPrison = new Cell(board.WhitePlayerPrison.Color, board.WhitePlayerPrison.Count, board.WhitePlayerPrison.Position);
@@ -53,7 +58,7 @@ namespace WebApplication2.Models
                 playSecondDice(boardAfterSmallMove, dice[0]);
             }
 
-            formatPossibleBoards();
+            //formatPossibleBoards();
             return PossibleBoards;
         }
 
@@ -87,7 +92,7 @@ namespace WebApplication2.Models
                     BiggerDiceFirst.Add(board);
                     return;
                 case "lastDie":
-                    PossibleBoards.Add(board);
+                    if(!PossibleBoards.Contains(board)) PossibleBoards.Add(board);
                     return;
             }
         }
@@ -117,7 +122,7 @@ namespace WebApplication2.Models
                                     case "biggerDie":
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
-                                        PossibleBoards.Add(homeBoard); break;
+                                        if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
                         }
@@ -136,7 +141,7 @@ namespace WebApplication2.Models
                                     case "biggerDie":
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
-                                        PossibleBoards.Add(homeBoard); break;
+                                        if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
                             else if (homeBoard.Cells[destination].Count < 2) // We ate the opponent
@@ -154,7 +159,7 @@ namespace WebApplication2.Models
                                     case "biggerDie":
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
-                                        PossibleBoards.Add(homeBoard); break;
+                                        if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
                         }
@@ -172,7 +177,7 @@ namespace WebApplication2.Models
                         case "biggerDie":
                             BiggerDiceFirst.Add(homeBoard); break;
                         case "lastDie":
-                            PossibleBoards.Add(homeBoard); break;
+                            if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                     }
                 }
             }
@@ -205,7 +210,7 @@ namespace WebApplication2.Models
                                     case "biggerDie":
                                         BiggerDiceFirst.Add(newBoard2); break;
                                     case "lastDie":
-                                        PossibleBoards.Add(newBoard2); break;
+                                        if (!PossibleBoards.Contains(newBoard2)) PossibleBoards.Add(newBoard2); break;
                                 }
                             }
                             else
@@ -221,7 +226,7 @@ namespace WebApplication2.Models
                                     case "biggerDie":
                                         BiggerDiceFirst.Add(newBoard2); break;
                                     case "lastDie":
-                                        PossibleBoards.Add(newBoard2); break;
+                                        if (!PossibleBoards.Contains(newBoard2)) PossibleBoards.Add(newBoard2); break;
                                 }
                             }
                         }
@@ -338,9 +343,9 @@ namespace WebApplication2.Models
             }
             foreach (Board board2 in oneMoveBoards) // Copy the final results after 4 moves into possibleBoards.
             {
-                possibleBoards.Add(board2);
+                if(!PossibleBoards.Contains(board2)) PossibleBoards.Add(board2);
             }
-            formatPossibleBoards();
+            //formatPossibleBoards();
         }
 
         private void playSmallerDieFirst(Board board, int die)

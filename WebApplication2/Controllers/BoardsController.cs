@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using WebApplication2.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,11 +29,14 @@ namespace WebApplication2.Controllers
         //[Route("/api/Boards/{dice}")]
         public Board Post([FromBody] RequestModel requestModel)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             Board board = requestModel.Board;
             Array.Sort(requestModel.Dice);
             int[] dice = requestModel.Dice;
             GameHandler gameHandler = new GameHandler();
             List<Board> possible = gameHandler.getPossibleBoards(board, dice);
+            Console.WriteLine($"there are {possible.Count} possible boards");
             if (possible.Count == 0) return null;
             Board toReturn = possible[0];
             foreach(Board boardToGetHeuristic in possible)
@@ -40,7 +44,11 @@ namespace WebApplication2.Controllers
                 boardToGetHeuristic.heuristic();
                 if (toReturn.HeuristicScore < boardToGetHeuristic.HeuristicScore) toReturn = boardToGetHeuristic;
             }
-             return toReturn;
+            stopwatch.Stop();
+            TimeSpan elapsedTime = stopwatch.Elapsed;
+
+            Console.WriteLine($"The function took {elapsedTime.TotalSeconds} seconds to execute.");
+            return toReturn;
         }   
 
         // PUT api/<BoardsController>/5
