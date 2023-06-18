@@ -9,7 +9,7 @@ namespace WebApplication2.Models
 {
     public class Board
     {
-        private List<Cell> cells = new List<Cell>(); // Represents 24 cells that cells[0] belongs to agent's home where there is 2 black players that belong to player
+        private List<Cell> cells = new List<Cell>();
         private Cell whitePlayerPrison = new Cell();
         private Cell blackPlayerPrison = new Cell();
         private Cell whitePlayerBank = new Cell();
@@ -81,10 +81,15 @@ namespace WebApplication2.Models
             }
             return count;
         }
-
         public void heuristic()
         {
-            this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers();
+            int count = this.blackPlayerBank.Count;
+            for(int i=0; i<=5;i++)
+            {
+                if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B') count += this.Cells[i].Count;
+            }
+            if (count == 15) this.heuristicScore = this.BlackPlayerBank.Count;
+            else this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers() - this.getChanceToGetEaten();
         }
         public bool checkWinner(char color)
         {
