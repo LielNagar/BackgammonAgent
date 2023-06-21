@@ -18,6 +18,7 @@ namespace WebApplication2.Models
         private int numOfHomeHouses;
         private int userDestination;
         private int agentDestination;
+        private List<CheckerMove> checkerMoves = new List<CheckerMove>();
 
         public Board() { }
         public Board(List<Cell> cells)
@@ -36,7 +37,6 @@ namespace WebApplication2.Models
             this.WhitePlayerBank = whitePlayerBank;
             this.BlackPlayerBank = blackPlayerBank;
         }
-
         public Board(Cell whitePlayerPrison, Cell whitePlayerBank, Cell blackPlayerPrison, Cell blackPlayerBank)
         {
             //this.Cells = cells;
@@ -45,8 +45,6 @@ namespace WebApplication2.Models
             this.WhitePlayerBank = whitePlayerBank;
             this.BlackPlayerBank = blackPlayerBank;
         }
-
-
         public List<Cell> Cells { get => cells; set => cells = value; }
         public Cell WhitePlayerPrison { get => whitePlayerPrison; set => whitePlayerPrison = value; }
         public Cell BlackPlayerPrison { get => blackPlayerPrison; set => blackPlayerPrison = value; }
@@ -56,6 +54,7 @@ namespace WebApplication2.Models
         public int NumOfHomeHouses { get => numOfHomeHouses; set => numOfHomeHouses = value; }
         public int UserDestination { get => userDestination; set => userDestination = value; }
         public int AgentDestination { get => agentDestination; set => agentDestination = value; }
+        public List<CheckerMove> CheckerMoves { get => checkerMoves; set => checkerMoves = value; }
 
         public int getEatenPlayers()
         {
@@ -89,7 +88,7 @@ namespace WebApplication2.Models
                 if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B') count += this.Cells[i].Count;
             }
             if (count == 15) this.heuristicScore = this.BlackPlayerBank.Count;
-            else this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers() - this.getChanceToGetEaten();
+            else this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers();
         }
         public bool checkWinner(char color)
         {

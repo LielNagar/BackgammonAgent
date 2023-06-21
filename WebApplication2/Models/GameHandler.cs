@@ -28,7 +28,11 @@ namespace WebApplication2.Models
             newBoard.WhitePlayerPrison = new Cell(board.WhitePlayerPrison.Color, board.WhitePlayerPrison.Count, board.WhitePlayerPrison.Position);
             newBoard.WhitePlayerBank = new Cell(board.WhitePlayerBank.Color, board.WhitePlayerBank.Count, board.WhitePlayerBank.Position);
             newBoard.BlackPlayerBank = new Cell(board.BlackPlayerBank.Color, board.BlackPlayerBank.Count, board.BlackPlayerBank.Position);
-
+            newBoard.CheckerMoves = new List<CheckerMove>();
+            foreach (CheckerMove move in board.CheckerMoves)
+            {
+                newBoard.CheckerMoves.Add(move);
+            }
             return newBoard;
         }
         public List<Board> getPossibleBoards(Board currentBoard, int[] dice)
@@ -40,17 +44,17 @@ namespace WebApplication2.Models
             }
             else
             {
-                playBiggerDieFirst(currentBoard, dice[0]);
-                playSmallerDieFirst(currentBoard, dice[1]);
+                playBiggerDieFirst(currentBoard, dice[1]);
+                playSmallerDieFirst(currentBoard, dice[0]);
             }
 
             foreach (Board boardAfterBigMove in BiggerDiceFirst)
             {
-                playSecondDice(boardAfterBigMove, dice[1]);
+                playSecondDice(boardAfterBigMove, dice[0]);
             }
             foreach(Board boardAfterSmallMove in SmallerDiceFirst)
             {
-                playSecondDice(boardAfterSmallMove, dice[0]);
+                playSecondDice(boardAfterSmallMove, dice[1]);
             }
 
             //formatPossibleBoards();
@@ -188,6 +192,7 @@ namespace WebApplication2.Models
                     {
                         int destination = cell.Position - die;
                         Board newBoard2 = copyBoard(board);
+                        CheckerMove move = new CheckerMove();
                         if (newBoard2.Cells[destination].Count < 2 || newBoard2.Cells[destination].Color == 'B')
                         {
                             if (newBoard2.Cells[destination].Color == 'W') // We ate the opponent
@@ -201,10 +206,19 @@ namespace WebApplication2.Models
                                 switch (whichDieMove)
                                 {
                                     case "smallerDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         SmallerDiceFirst.Add(newBoard2); break;
                                     case "biggerDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         BiggerDiceFirst.Add(newBoard2); break;
                                     case "lastDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         if (!PossibleBoards.Contains(newBoard2)) PossibleBoards.Add(newBoard2); break;
                                 }
                             }
@@ -217,10 +231,19 @@ namespace WebApplication2.Models
                                 switch (whichDieMove)
                                 {
                                     case "smallerDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         SmallerDiceFirst.Add(newBoard2); break;
                                     case "biggerDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         BiggerDiceFirst.Add(newBoard2); break;
                                     case "lastDie":
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard2.CheckerMoves.Add(move);
                                         if (!PossibleBoards.Contains(newBoard2)) PossibleBoards.Add(newBoard2); break;
                                 }
                             }
