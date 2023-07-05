@@ -8,6 +8,7 @@ namespace WebApplication2.Models
         private List<Board> possibleBoards = new List<Board>();
         private List<Board> biggerDiceFirst = new List<Board>();
         private List<Board> smallerDiceFirst = new List<Board>();
+        private List<CheckerMove> checkerMoves = new List<CheckerMove>();
         
         public GameHandler() { }
 
@@ -33,6 +34,7 @@ namespace WebApplication2.Models
             {
                 newBoard.CheckerMoves.Add(move);
             }
+            newBoard.UserDestination = board.UserDestination;
             return newBoard;
         }
         public List<Board> getPossibleBoards(Board currentBoard, int[] dice)
@@ -57,13 +59,14 @@ namespace WebApplication2.Models
                 playSecondDice(boardAfterSmallMove, dice[1]);
             }
 
-            //formatPossibleBoards();
+            formatPossibleBoards();
             return PossibleBoards;
         }
 
         private void handlePrisonMove(Board board, int die, string whichDieMove)
         {
             int destination = 24 - die;
+            CheckerMove move = new CheckerMove();
             if (board.Cells[destination].Count < 2 || board.Cells[destination].Color == 'B')
             {
                 if (board.Cells[destination].Color == 'W') // It means that we can eat the user.
@@ -85,13 +88,27 @@ namespace WebApplication2.Models
             switch (whichDieMove)
             {
                 case "smallerDie":
+                    move.From = 25;
+                    move.To = destination;
+                    board.CheckerMoves.Add(move);
                     SmallerDiceFirst.Add(board);
                     return;
                 case "biggerDie":
+                    move.From = 25;
+                    move.To = destination;
+                    board.CheckerMoves.Add(move);
                     BiggerDiceFirst.Add(board);
                     return;
                 case "lastDie":
-                    if(!PossibleBoards.Contains(board)) PossibleBoards.Add(board);
+                    move.From = 25;
+                    move.To = destination;
+                    board.CheckerMoves.Add(move);
+                    if (!PossibleBoards.Contains(board)) PossibleBoards.Add(board);
+                    return;
+                case "double":
+                    move.From = 25;
+                    move.To = destination;
+                    board.CheckerMoves.Add(move);
                     return;
             }
         }
@@ -103,6 +120,7 @@ namespace WebApplication2.Models
             {
                 Board homeBoard = copyBoard(board);
                 destination = k - die;
+                CheckerMove move = new CheckerMove();
                 try
                 {
                     if (homeBoard.Cells[k].Color == 'B' && homeBoard.Cells[k].Count > 0) // Cell is ours and there is a player
@@ -117,10 +135,19 @@ namespace WebApplication2.Models
                                 switch (whichDieMove)
                                 {
                                     case "smallerDie":
+                                        move.From = k;
+                                        move.To = 27;
+                                        homeBoard.CheckerMoves.Add(move);
                                         SmallerDiceFirst.Add(homeBoard); break;
                                     case "biggerDie":
+                                        move.From = k;
+                                        move.To = 27;
+                                        homeBoard.CheckerMoves.Add(move);
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
+                                        move.From = k;
+                                        move.To = 27;
+                                        homeBoard.CheckerMoves.Add(move);
                                         if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
@@ -136,10 +163,19 @@ namespace WebApplication2.Models
                                 switch (whichDieMove)
                                 {
                                     case "smallerDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         SmallerDiceFirst.Add(homeBoard); break;
                                     case "biggerDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
@@ -154,10 +190,19 @@ namespace WebApplication2.Models
                                 switch (whichDieMove)
                                 {
                                     case "smallerDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         SmallerDiceFirst.Add(homeBoard); break;
                                     case "biggerDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         BiggerDiceFirst.Add(homeBoard); break;
                                     case "lastDie":
+                                        move.From = k;
+                                        move.To = destination;
+                                        homeBoard.CheckerMoves.Add(move);
                                         if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                                 }
                             }
@@ -172,10 +217,19 @@ namespace WebApplication2.Models
                     switch (whichDieMove)
                     {
                         case "smallerDie":
+                            move.From = k;
+                            move.To = 27;
+                            homeBoard.CheckerMoves.Add(move);
                             SmallerDiceFirst.Add(homeBoard); break;
                         case "biggerDie":
+                            move.From = k;
+                            move.To = 27;
+                            homeBoard.CheckerMoves.Add(move);
                             BiggerDiceFirst.Add(homeBoard); break;
                         case "lastDie":
+                            move.From = k;
+                            move.To = 27;
+                            homeBoard.CheckerMoves.Add(move);
                             if (!PossibleBoards.Contains(homeBoard)) PossibleBoards.Add(homeBoard); break;
                     }
                 }
@@ -278,6 +332,7 @@ namespace WebApplication2.Models
                         {
                             int destination = k - die;
                             Board homeBoard = copyBoard(board1);
+                            CheckerMove move = new CheckerMove();
                             try
                             {
                                 if (homeBoard.Cells[k].Color == 'B' && homeBoard.Cells[k].Count > 0) // Cell is ours and there is a player
@@ -289,6 +344,9 @@ namespace WebApplication2.Models
                                             homeBoard.Cells[k].Count--;
                                             if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                             homeBoard.BlackPlayerBank.Count++;
+                                            move.From = k;
+                                            move.To = 27;
+                                            homeBoard.CheckerMoves.Add(move);
                                             makedBoards.Add(homeBoard);
                                         }
                                     }
@@ -299,6 +357,9 @@ namespace WebApplication2.Models
                                             homeBoard.Cells[k].Count--;
                                             homeBoard.Cells[destination].Count++;
                                             if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
+                                            move.From = k;
+                                            move.To = destination;
+                                            homeBoard.CheckerMoves.Add(move);
                                             makedBoards.Add(homeBoard);
                                         }
                                         else // We eat the opponent
@@ -308,6 +369,9 @@ namespace WebApplication2.Models
                                             homeBoard.WhitePlayerPrison.Count++;
                                             homeBoard.UserDestination += homeBoard.Cells[destination].Position + 1;
                                             if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
+                                            move.From = k;
+                                            move.To = destination;
+                                            homeBoard.CheckerMoves.Add(move);
                                             makedBoards.Add(homeBoard);
                                         }
                                     }
@@ -318,6 +382,9 @@ namespace WebApplication2.Models
                                 homeBoard.Cells[k].Count--;
                                 if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
                                 homeBoard.BlackPlayerBank.Count++;
+                                move.From = k;
+                                move.To = 27;
+                                homeBoard.CheckerMoves.Add(move);
                                 makedBoards.Add(homeBoard);
                             }
                         }
@@ -327,6 +394,7 @@ namespace WebApplication2.Models
                     {
                         if (cell.Color == 'B') // Cell is ours
                         {
+                            CheckerMove move = new CheckerMove();
                             try
                             {
                                 int destination = cell.Position - die;
@@ -342,6 +410,9 @@ namespace WebApplication2.Models
                                         newBoard.UserDestination += newBoard.Cells[destination].Position + 1;
                                         newBoard.Cells[cell.Position].Count--;
                                         if (newBoard.Cells[cell.Position].Count == 0) newBoard.Cells[cell.Position].Color = '0';
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard.CheckerMoves.Add(move);
                                         makedBoards.Add(newBoard);
                                     }
                                     else
@@ -350,6 +421,9 @@ namespace WebApplication2.Models
                                         newBoard.Cells[destination].Color = 'B';
                                         newBoard.Cells[cell.Position].Count--;
                                         if (newBoard.Cells[cell.Position].Count == 0) newBoard.Cells[cell.Position].Color = '0';
+                                        move.From = cell.Position;
+                                        move.To = destination;
+                                        newBoard.CheckerMoves.Add(move);
                                         makedBoards.Add(newBoard);
                                     }
                                 }
@@ -358,6 +432,10 @@ namespace WebApplication2.Models
                         }
                     }
                 }
+            }
+            if(oneMoveBoards.Count == 1)
+            {
+                if (oneMoveBoards.Contains(board)) oneMoveBoards.Clear();
             }
             foreach (Board board2 in oneMoveBoards) // Copy the final results after 4 moves into possibleBoards.
             {
@@ -420,19 +498,6 @@ namespace WebApplication2.Models
             {
                 if (BiggerDiceFirst.Count == 0 && SmallerDiceFirst.Count > 0) PossibleBoards = SmallerDiceFirst;
                 if (BiggerDiceFirst.Count > 0 && SmallerDiceFirst.Count == 0) PossibleBoards = BiggerDiceFirst;
-            }
-            else
-            {
-                Console.WriteLine($"There are {PossibleBoards.Count} possible boards");
-                List<Board> unique = new List<Board>();
-                foreach (Board board in PossibleBoards)
-                {
-                    if (!unique.Contains(board))
-                    {
-                        unique.Add(board);
-                    }
-                }
-                PossibleBoards = unique;
             }
         }
     }
