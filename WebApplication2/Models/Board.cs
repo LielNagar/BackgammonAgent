@@ -195,7 +195,7 @@ namespace WebApplication2.Models
                         this.heuristicScore = 100 + this.blackPlayerBank.Count - itHurts +bonus;
                     }
                     else
-                        this.heuristicScore = 100 + this.BlackPlayerBank.Count * 200;
+                        this.heuristicScore = 100 + this.BlackPlayerBank.Count;
                     break;
 
                 case BoardState.NeedToRun:
