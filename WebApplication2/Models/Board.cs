@@ -150,7 +150,7 @@ namespace WebApplication2.Models
             this.openPlayersPosition = this.getOpenPlayers();
             this.State = this.getState();
             Console.WriteLine($"Board state is :{this.State}");
-
+            double itHurts = 0.0;
             switch (this.state)
             {
                 case BoardState.Playing:
@@ -167,7 +167,7 @@ namespace WebApplication2.Models
                     {
                         if (this.Cells[6].Count > 1 && this.Cells[6].Color == 'B') closing6 = 4;
                     }
-                    double itHurts = 0.0;
+                    
                     foreach (Cell cell in this.openPlayersPosition)
                     {
                         cell.ChanceToGetEaten = cell.calculateChanceToGetEaten(this);
@@ -182,13 +182,20 @@ namespace WebApplication2.Models
 
                 case BoardState.Bearing:
                     int bonus = 0;
+                    itHurts = 0;
                     if (isThereAThreat())
                     {
+                        foreach (Cell cell in this.openPlayersPosition)
+                        {
+                            cell.ChanceToGetEaten = cell.calculateChanceToGetEaten(this);
+                            itHurts += cell.ChanceToGetEaten * (24 - cell.Position);
+                        }
+                        itHurts = normalizeItHurtsByUserHome(itHurts);
                         if (isUserIsClosed()) bonus = 100;
-                        this.heuristicScore = this.blackPlayerBank.Count * 100 - this.openPlayersPosition.Count + bonus;
+                        this.heuristicScore = 100 + this.blackPlayerBank.Count - itHurts +bonus;
                     }
                     else
-                        this.heuristicScore = this.BlackPlayerBank.Count * 200 - normalizeItHurtsByUserHome(this.openPlayersPosition.Count);
+                        this.heuristicScore = 100 + this.BlackPlayerBank.Count * 200;
                     break;
 
                 case BoardState.Fight:
