@@ -14,11 +14,14 @@ namespace WebApplication2.Models
         private Cell blackPlayerPrison = new Cell();
         private Cell whitePlayerBank = new Cell();
         private Cell blackPlayerBank = new Cell();
-        private int heuristicScore;
+        private double heuristicScore;
         private int numOfHomeHouses;
         private int userDestination;
         private int agentDestination;
+        private int agentCheckersInside;
         private List<CheckerMove> checkerMoves = new List<CheckerMove>();
+        private BoardState state;
+        private List<Cell> openPlayersPosition = new List<Cell>();
 
         public Board() { }
         public Board(List<Cell> cells)
@@ -50,11 +53,13 @@ namespace WebApplication2.Models
         public Cell BlackPlayerPrison { get => blackPlayerPrison; set => blackPlayerPrison = value; }
         public Cell WhitePlayerBank { get => whitePlayerBank; set => whitePlayerBank = value; }
         public Cell BlackPlayerBank { get => blackPlayerBank; set => blackPlayerBank = value; }
-        public int HeuristicScore { get => heuristicScore; set => heuristicScore = value; }
+        public double HeuristicScore { get => heuristicScore; set => heuristicScore = value; }
         public int NumOfHomeHouses { get => numOfHomeHouses; set => numOfHomeHouses = value; }
         public int UserDestination { get => userDestination; set => userDestination = value; }
         public int AgentDestination { get => agentDestination; set => agentDestination = value; }
         public List<CheckerMove> CheckerMoves { get => checkerMoves; set => checkerMoves = value; }
+        public BoardState State { get => state; set => state = value; }
+        public int AgentCheckersInside { get => agentCheckersInside; set => agentCheckersInside = value; }
 
         public int getEatenPlayers()
         {
@@ -71,38 +76,241 @@ namespace WebApplication2.Models
             return count;
         }
 
-        public int getOpenPlayers()
+        public List<Cell> getOpenPlayers()
         {
-            int count = 0;
             foreach(Cell cell in this.Cells)
             {
-                if (cell.Count == 1 && cell.Color == 'B') count++;
+                if (cell.Count == 1 && cell.Color == 'B') this.openPlayersPosition.Add(cell);
             }
+            return this.openPlayersPosition;
+        }
+
+        public int isAgentInsideUserHome()
+        {
+            int count = 0;
+            for(int i = 23; i>=18; i--)
+            {
+                if (this.Cells[i].Color == 'B' && this.Cells[i].Count > 0) count++;
+            }
+            this.AgentCheckersInside = count;
+            if (count == 0) return 0;
             return count;
         }
-        public void heuristic()
+
+        public BoardState getState()
         {
             int count = this.blackPlayerBank.Count;
-            for(int i=0; i<=5;i++)
+
+            for (int i = 0; i <= 5; i++)
             {
                 if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B') count += this.Cells[i].Count;
             }
-            if (count == 15) this.heuristicScore = this.BlackPlayerBank.Count;
-            else this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + 2 * this.getHomeHouses() - this.getOpenPlayers();
-        }
-        public bool checkWinner(char color)
-        {
-            if (color == 'W')
-            {
-                if (this.WhitePlayerBank.Count == 15) return true;
-                return false;
-            }
-            else
-            {
-                if (this.BlackPlayerBank.Count == 15) return true;
-                return false;
-            }
 
+            if (count == 15) this.state = BoardState.Bearing;
+
+            else if (isAgentInsideUserHome()>0)
+                if (this.AgentDestination < 100) this.state = BoardState.NeedToRun;
+            else this.state = BoardState.Playing;
+
+            return state;
+        }
+
+        public bool isThereAThreat()
+        {
+            bool isPlayerFound = false;
+            if (this.WhitePlayerPrison.Count > 0) return true;
+            for(int i=23; i>=0; i--)
+            {
+                if (this.Cells[i].Color == 'B' && this.Cells[i].Count > 0)
+                {
+                    isPlayerFound = true;
+                }
+                if (isPlayerFound)
+                {
+                    for(int j=i; j>=0; j--)
+                    {
+                        if (this.Cells[i].Color == 'W' && this.Cells[i].Count > 0) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isUserIsClosed()
+        {
+            for(int i = 0; i<=5; i++)
+            {
+                if (!(this.Cells[i].Count > 1 && this.Cells[i].Color == 'B')) return false;
+            }
+            return true;
+        }
+        public void heuristic()
+        {
+            this.openPlayersPosition = this.getOpenPlayers();
+            this.State = this.getState();
+            Console.WriteLine($"Board state is :{this.State}");
+            double itHurts = 0.0;
+            switch (this.state)
+            {
+                case BoardState.Playing:
+                    int sum = 0;
+                    if (!isThereAThreat())
+                    {
+                        if (!isAllPlayersInHome())
+                        {
+                            sum = getDistance();
+                        }
+                    }
+                    int closing6 = 0;
+                    if (isUserInsideOurHome())
+                    {
+                        if (this.Cells[6].Count > 1 && this.Cells[6].Color == 'B') closing6 = 4;
+                    }
+                    
+                    foreach (Cell cell in this.openPlayersPosition)
+                    {
+                        cell.ChanceToGetEaten = cell.calculateChanceToGetEaten(this);
+                        itHurts += cell.ChanceToGetEaten * (24 - cell.Position);
+                    }
+                    itHurts = normalizeItHurtsByUserHome(itHurts);
+                    this.heuristicScore = this.UserDestination + this.whitePlayerPrison.Count + closing6 +
+                        2.5 * this.getHomeHouses() - itHurts + 1.5 * calculateChanceToMakeHomeHouse() - getPlayersInsideUserHome() - sum;
+
+                    if (this.Cells[5].Count < 2 && this.Cells[6].Color == 'B') this.HeuristicScore -= 5;
+                        break;
+
+                case BoardState.Bearing:
+                    int bonus = 0;
+                    itHurts = 0;
+                    if (isThereAThreat())
+                    {
+                        foreach (Cell cell in this.openPlayersPosition)
+                        {
+                            cell.ChanceToGetEaten = cell.calculateChanceToGetEaten(this);
+                            itHurts += cell.ChanceToGetEaten * (24 - cell.Position);
+                        }
+                        itHurts = normalizeItHurtsByUserHome(itHurts);
+                        if (isUserIsClosed()) bonus = 100;
+                        this.heuristicScore = 100 + this.blackPlayerBank.Count - itHurts +bonus;
+                    }
+                    else
+                        this.heuristicScore = 100 + this.BlackPlayerBank.Count;
+                    break;
+
+                case BoardState.NeedToRun:
+                    this.HeuristicScore = this.UserDestination - this.AgentCheckersInside +
+                        this.getHomeHouses() - this.getDistance();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        public double normalizeItHurtsByUserHome(double itHurts)
+        {
+            int count = 0;
+            for (int i = 23; i >= 18; i--)
+            {
+                if (this.Cells[i].Color == 'W' && this.Cells[i].Count > 1) count++;
+            }
+            switch (count)
+            {
+                case 1:
+                    itHurts *= 1;
+                    break;
+                case 2: itHurts *= 1;
+                    break;
+                case 3: itHurts *= 2;
+                    break;
+                case 4: itHurts *= 3;
+                    break;
+                case 5: itHurts *= 4;
+                    break;
+                case 6: itHurts *= 5;
+                    break;
+            }
+            return itHurts;
+        }
+
+        private int getDistance()
+        {
+            int sumOfDistance = 0;
+            for (int i = 6; i <= 23; i++)
+            {
+                if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B')
+                    sumOfDistance += this.Cells[i].Position * this.Cells[i].Count;
+            }
+            return sumOfDistance;
+        }
+        private bool isUserInsideOurHome()
+        {
+            for(int i=0; i<=5; i++)
+            {
+                if (this.Cells[i].Color == 'W' && this.Cells[i].Count > 0) return true;
+            }
+            return false;
+        }
+        private int getPlayersInsideUserHome()
+        {
+            int count = 0;
+            for(int i=23; i>=18; i--)
+            {
+                if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B') count += this.Cells[i].Count; 
+            }
+            return count;
+        }
+        private double calculateChanceToMakeHomeHouse()
+        {
+            DiceRollProbability probability= new DiceRollProbability();
+            double chance = 0.0;
+            int firstDie = 0;
+            int secondDie = 0;
+            for(int i=0; i<=5; i++)
+            {
+                if (this.Cells[i].Count < 2)
+                {
+                    for(int firstPlayer = i+1; firstPlayer<= i+6; firstPlayer++)
+                    {
+                        if (firstPlayer >= 0 && firstPlayer <= 5)
+                        {
+                            if (this.Cells[firstPlayer].Count != 2)
+                                firstDie = firstPlayer - i;
+                        }
+                        else firstDie = firstPlayer - i;
+                        if(firstDie != 0)
+                        {
+                            for (int secondPlayer = i + 1; secondPlayer <= i + 6; secondPlayer++)
+                            {
+                                if (secondPlayer >= 0 && secondPlayer <= 5)
+                                {
+                                    if (this.Cells[secondPlayer].Count != 2)
+                                    {
+                                        if (secondPlayer - firstDie == i)
+                                        {
+                                            if (this.Cells[secondPlayer].Count > 3)
+                                                secondDie = firstDie;
+                                        }
+                                        else secondDie = secondPlayer - i;
+
+                                    }
+                                }
+                                else secondDie = secondPlayer - i;
+                            }
+                            chance += probability.GetRollProbability(firstDie, secondDie);
+                        }
+                    }
+                }
+            }
+            return chance;
+        }
+        public void printChance()
+        {
+            foreach (Cell cell in this.openPlayersPosition)
+            {
+                cell.ChanceToGetEaten = cell.calculateChanceToGetEaten(this);
+                Console.WriteLine($"player of position {cell.Position}, have {cell.ChanceToGetEaten} chance to be eaten, it hurts {cell.ChanceToGetEaten * (24- cell.Position)}");
+            }
         }
         public bool isAllPlayersInHome()
         {
@@ -114,11 +322,11 @@ namespace WebApplication2.Models
             return true;
         }
 
-        public bool isThereAnyPlayerBeforeDicePosition(int die)
+        public bool isThereAnyPlayerBeforeDicePosition(int homeIndex)
         {
-            for (int i = die - 1; i <= 5; i++)
+            for (int i = homeIndex+1; i <= 6; i++)
             {
-                if (this.Cells[i].Count > 0) return true;
+                if (this.Cells[i].Count > 0 && this.Cells[i].Color == 'B') return true;
             }
             return false;
         }

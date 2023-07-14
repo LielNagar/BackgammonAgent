@@ -11,6 +11,7 @@ namespace WebApplication2.Models
         char color;
         int count;
         int position;
+        double chanceToGetEaten;
 
         public Cell(char color, int count, int position)
         {
@@ -23,6 +24,29 @@ namespace WebApplication2.Models
         public char Color { get => color; set => color = value; }
         public int Count { get => count; set => count = value; }
         public int Position { get => position; set => position = value; }
+        public double ChanceToGetEaten { get => chanceToGetEaten; set => chanceToGetEaten = value; }
+
+        public double calculateChanceToGetEaten(Board board)
+        {
+            this.ChanceToGetEaten = 0;
+            DiceRollProbability probability = new DiceRollProbability();
+            if(board.WhitePlayerPrison.Count == 0)
+            {
+                for (int i = this.Position; i >= 0; i--)
+                {
+                    if (board.Cells[i].Count > 0 && board.Cells[i].Color == 'W')
+                    {
+                        int valueToEat = this.Position - board.Cells[i].Position;
+                        this.ChanceToGetEaten += probability.GetSumProbability(valueToEat);
+                    }
+                }
+            }
+            else
+            {
+                this.chanceToGetEaten = probability.GetSumProbability(this.Position+1);
+            }
+            return this.ChanceToGetEaten;
+        }
 
         public override bool Equals(object? obj)
         {

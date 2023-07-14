@@ -44,6 +44,7 @@ namespace WebApplication2.Controllers
                 boardToGetHeuristic.heuristic();
                 if (toReturn.HeuristicScore < boardToGetHeuristic.HeuristicScore) toReturn = boardToGetHeuristic;
             }
+            toReturn.printChance();
             stopwatch.Stop();
             TimeSpan elapsedTime = stopwatch.Elapsed;
 
