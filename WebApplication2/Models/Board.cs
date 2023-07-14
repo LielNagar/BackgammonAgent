@@ -198,9 +198,6 @@ namespace WebApplication2.Models
                         this.heuristicScore = 100 + this.BlackPlayerBank.Count * 200;
                     break;
 
-                case BoardState.Fight:
-                    break;
-
                 case BoardState.NeedToRun:
                     this.HeuristicScore = this.UserDestination - this.AgentCheckersInside + this.getHomeHouses() - this.getDistance() - this.isAgentInsideUserHome();
                     break;
