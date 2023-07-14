@@ -4,6 +4,7 @@
     {
         Playing,
         Bearing,
-        Fight
+        Fight,
+        NeedToRun
     }
 }

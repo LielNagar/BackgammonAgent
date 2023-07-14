@@ -35,6 +35,7 @@ namespace WebApplication2.Models
                 newBoard.CheckerMoves.Add(move);
             }
             newBoard.UserDestination = board.UserDestination;
+            newBoard.AgentDestination = board.AgentDestination;
             return newBoard;
         }
         public List<Board> getPossibleBoards(Board currentBoard, int[] dice)
@@ -127,7 +128,7 @@ namespace WebApplication2.Models
                     {
                         if (k + 1 < die) // Cell that is smaller than the dice
                         {
-                            if (!homeBoard.isThereAnyPlayerBeforeDicePosition(die)) // We take out
+                            if (!homeBoard.isThereAnyPlayerBeforeDicePosition(k)) // We take out
                             {
                                 homeBoard.Cells[k].Count--;
                                 if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
@@ -339,7 +340,7 @@ namespace WebApplication2.Models
                                 {
                                     if (k + 1 < die) // Cell is smaller than dice
                                     {
-                                        if (!homeBoard.isThereAnyPlayerBeforeDicePosition(die)) // We take out
+                                        if (!homeBoard.isThereAnyPlayerBeforeDicePosition(k)) // We take out
                                         {
                                             homeBoard.Cells[k].Count--;
                                             if (homeBoard.Cells[k].Count == 0) homeBoard.Cells[k].Color = '0';
