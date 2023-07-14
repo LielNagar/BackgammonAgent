@@ -57,7 +57,7 @@ namespace WebApplication2.Models
         public double GetRollProbability(int die1, int die2)
         {
             if (die1 == die2) return _rollProbabilities[die1 - 1, die2 - 1];
-            return _rollProbabilities[die1 - 1, die2 - 1] + _rollProbabilities[die2 - 1, die1 - 1];
+            return _rollProbabilities[die1 - 1, die2 - 1];
         }
     }
 }

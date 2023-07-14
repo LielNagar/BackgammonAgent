@@ -267,54 +267,44 @@ namespace WebApplication2.Models
         {
             DiceRollProbability probability= new DiceRollProbability();
             double chance = 0.0;
+            int firstDie = 0;
+            int secondDie = 0;
             for(int i=0; i<=5; i++)
             {
-                if (this.Cells[i].Count < 2) // we want to make home in this cell
+                if (this.Cells[i].Count < 2)
                 {
-                    for(int firstPlayer=i+1; firstPlayer <= 11; firstPlayer++) 
+                    for(int firstPlayer = i+1; firstPlayer<= i+6; firstPlayer++)
                     {
-                        if(firstPlayer >=0 || firstPlayer <= 5) // this player inside home and we dont want to ruin the home
+                        if (firstPlayer >= 0 && firstPlayer <= 5)
                         {
                             if (this.Cells[firstPlayer].Count != 2)
+                                firstDie = firstPlayer - i;
+                        }
+                        else firstDie = firstPlayer - i;
+                        if(firstDie != 0)
+                        {
+                            for (int secondPlayer = i + 1; secondPlayer <= i + 6; secondPlayer++)
                             {
-                                int firstDie = firstPlayer - i;
-                                if(firstDie <= 6)
+                                if (secondPlayer >= 0 && secondPlayer <= 5)
                                 {
-                                    for (int secondPlayer = firstPlayer; secondPlayer <= 11; secondPlayer++)
+                                    if (this.Cells[secondPlayer].Count != 2)
                                     {
-                                        int secondDie = secondPlayer - i;
-                                        if(secondDie <= 6)
+                                        if (secondPlayer - firstDie == i)
                                         {
-                                            if (firstPlayer == secondPlayer)
-                                            {
-                                                if (this.Cells[firstPlayer].Count > 3) chance += probability.GetRollProbability(firstDie, secondDie);
-                                            }
-                                            else
-                                            {
-                                                if (secondPlayer >= 0 || secondPlayer <= 5)
-                                                {
-                                                    if (this.Cells[secondPlayer].Count != 2)
-                                                    {
-                                                        chance += probability.GetRollProbability(firstDie, secondDie);
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    chance += probability.GetRollProbability(firstDie, secondDie);
-                                                }
-                                            }
+                                            if (this.Cells[secondPlayer].Count > 3)
+                                                secondDie = firstDie;
                                         }
+                                        else secondDie = secondPlayer - i;
 
                                     }
                                 }
-                                
+                                else secondDie = secondPlayer - i;
                             }
+                            chance += probability.GetRollProbability(firstDie, secondDie);
                         }
-
                     }
                 }
             }
-            Console.WriteLine($"CHANCE TO GET HOME HOUSE:{chance}");
             return chance;
         }
         public void printChance()
