@@ -99,7 +99,6 @@ namespace WebApplication2.Models
 
         public BoardState getState()
         {
-            int absoluteDiff = Math.Abs(this.AgentDestination - this.UserDestination);
             int count = this.blackPlayerBank.Count;
 
             for (int i = 0; i <= 5; i++)
@@ -199,7 +198,8 @@ namespace WebApplication2.Models
                     break;
 
                 case BoardState.NeedToRun:
-                    this.HeuristicScore = this.UserDestination - this.AgentCheckersInside + this.getHomeHouses() - this.getDistance() - this.isAgentInsideUserHome();
+                    this.HeuristicScore = this.UserDestination - this.AgentCheckersInside +
+                        this.getHomeHouses() - this.getDistance();
                     break;
 
                 default:
